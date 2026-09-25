@@ -5,6 +5,9 @@ Dhizuku Device Owner command-line client over TCP with TOTP authentication.
 A C client that talks to the dhizuku-cli Android server app,
 executes Device Owner commands via Dhizuku.
 
+> Server app / 服务端 App:
+> https://github.com/nsyhykui/dhizuku-cli
+
 ---
 
 ## English
@@ -12,6 +15,9 @@ executes Device Owner commands via Dhizuku.
 ### About
 
 This is the C client for dhizuku-cli.
+
+The Android server app is in the main repository:
+https://github.com/nsyhykui/dhizuku-cli
 
 It communicates with the Android server app over TCP, using TOTP for
 authentication and AES-GCM for encryption. The server app executes
@@ -113,6 +119,9 @@ Priority: command-line > env var > current dir file > home dir file > default.
 ### 关于
 
 这是 dhizuku-cli 的 C 客户端。
+
+服务端 Android App 在主仓库：
+https://github.com/nsyhykui/dhizuku-cli
 
 它通过 TCP 与 Android 服务端通信，用 TOTP 做认证，用 AES-GCM 加密。
 服务端通过 Dhizuku 执行 Device Owner 命令。
