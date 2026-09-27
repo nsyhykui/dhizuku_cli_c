@@ -2,8 +2,6 @@
  * dcli - 通过 TCP 调用 Dhizuku 的 DO 命令工具
  * Copyright (C) 2026 nsyhykui
  *
- * SPDX-License-Identifier: GPL-3.0-or-later
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,7 +19,9 @@
 #ifndef DCLI_COMMON_H
 #define DCLI_COMMON_H
 
-#define DCLI_VERSION "1.0.0"
+#ifndef DCLI_VERSION
+#define DCLI_VERSION "unknown"
+#endif
 
 #define DEFAULT_HOST    "127.0.0.1"
 #define DEFAULT_PORT    12345

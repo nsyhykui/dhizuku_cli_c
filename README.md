@@ -75,12 +75,26 @@ In Termux:
 | resume | package | Resume an app |
 | block_uninstall | package | Block uninstall |
 | unblock_uninstall | package | Allow uninstall |
+| status | <subcommand> | Query device status |
+
+### Status Commands
+
+| Subcommand | Description |
+|------------|-------------|
+| status hid | List hidden apps |
+| status suspend | List suspended apps |
+| status block_uninstall | List apps with uninstall blocked |
+| status permission update | Rescan all apps and update cache |
+| status permission <perm> | List apps with this permission |
+| status permission --package <pkg> | List all permissions of an app |
+| status permission <perm> --package <pkg> | Query one app's permission state |
 
 ### Options
 
     --host, -H <ip>    Server IP (default 127.0.0.1)
-    --                 Stop option parsing
+    --version, -V      Show version
     --help, -h         Show help
+    --                 Stop option parsing
 
 ### LAN Mode
 
@@ -111,6 +125,21 @@ Priority: command-line > env var > current dir file > home dir file > default.
 - The TOTP key is the only credential. Keep it safe.
 - All messages are encrypted with AES-GCM.
 - Do not enable LAN mode on untrusted networks.
+
+### Changelog
+
+#### v1.1.0
+
+- Added `status` commands
+- Added `--version` / `-V`
+- Added `--help` / `-h` support
+- Colored output for errors and warnings
+- Fixed `--package` being treated as unknown option
+- Response reading now waits for EOF (supports multi-line output)
+
+#### v1.0.0
+
+- First release
 
 ---
 
@@ -178,12 +207,26 @@ Termux 里：
 | resume | 包名 | 恢复挂起 |
 | block_uninstall | 包名 | 阻止卸载 |
 | unblock_uninstall | 包名 | 允许卸载 |
+| status | <子命令> | 查询设备状态 |
+
+### Status 命令
+
+| 子命令 | 说明 |
+|--------|------|
+| status hid | 列出被隐藏的应用 |
+| status suspend | 列出被挂起的应用 |
+| status block_uninstall | 列出阻止卸载的应用 |
+| status permission update | 重新扫描所有应用并更新缓存 |
+| status permission <权限> | 列出拥有该权限的应用 |
+| status permission --package <包名> | 列出该应用的所有权限 |
+| status permission <权限> --package <包名> | 查询某应用某权限状态 |
 
 ### 选项
 
     --host, -H <ip>    服务端 IP（默认 127.0.0.1）
-    --                 停止解析后续选项
+    --version, -V      显示版本
     --help, -h         显示帮助
+    --                 停止解析后续选项
 
 ### 局域网模式
 
@@ -214,6 +257,21 @@ Termux 里：
 - TOTP 密钥是唯一的认证凭据，请妥善保管。
 - 所有消息都经过 AES-GCM 加密。
 - 不要在不可信网络上开启局域网模式。
+
+### 更新日志
+
+#### v1.1.0
+
+- 新增 status 命令
+- 新增 --version / -V
+- 新增 --help / -h 支持
+- 错误与警告输出带颜色
+- 修复 --package 被当成未知选项的问题
+- 响应读取改为读到 EOF（支持多行输出）
+
+#### v1.0.0
+
+- 首个版本
 
 ---
 

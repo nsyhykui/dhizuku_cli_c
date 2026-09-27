@@ -2,8 +2,6 @@
  * dcli - 通过 TCP 调用 Dhizuku 的 DO 命令工具
  * Copyright (C) 2026 nsyhykui
  *
- * SPDX-License-Identifier: GPL-3.0-or-later
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,5 +21,12 @@
 
 void i18n_init(void);
 const char *tr(const char *en, const char *zh);
+
+/* 颜色输出：err 红色，warn 黄色（均走 stderr），无颜色支持时退化为普通输出 */
+void err_print(const char *fmt, ...);
+void warn_print(const char *fmt, ...);
+
+/* 是否启用彩色（供客户端其他地方判断） */
+int color_enabled(void);
 
 #endif /* DCLI_I18N_H */
