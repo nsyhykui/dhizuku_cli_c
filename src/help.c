@@ -28,19 +28,23 @@ struct cmd_help {
     const char *name;
     const char *desc_en;
     const char *desc_zh;
-    const char *usage;
 };
 
 static struct cmd_help HELP[] = {
-    {"ping",              "Test connection",   "测试连接",       "dcli ping"},
-    {"lock_now",          "Lock screen now",   "立即锁屏",       "dcli lock_now"},
-    {"hide",              "Hide app",          "隐藏指定应用",   "dcli hide <package>"},
-    {"unhide",            "Unhide app",        "取消隐藏应用",   "dcli unhide <package>"},
-    {"suspend",           "Suspend app",       "挂起应用",       "dcli suspend <package>"},
-    {"resume",            "Resume app",        "恢复挂起",       "dcli resume <package>"},
-    {"block_uninstall",   "Block uninstall",   "阻止卸载",       "dcli block_uninstall <package>"},
-    {"unblock_uninstall", "Unblock uninstall", "允许卸载",       "dcli unblock_uninstall <package>"},
-    {"status",            "Query status",      "查询状态",       "dcli status <subcommand>"},
+    {"ping",              "Test connection",       "测试连接"},
+    {"lock_now",          "Lock screen now",       "立即锁屏"},
+    {"hide",              "Hide app",              "隐藏应用"},
+    {"unhide",            "Unhide app",            "取消隐藏"},
+    {"suspend",           "Suspend app",           "挂起应用"},
+    {"resume",            "Resume app",            "恢复挂起"},
+    {"block_uninstall",   "Block uninstall",       "阻止卸载"},
+    {"unblock_uninstall", "Unblock uninstall",     "允许卸载"},
+    {"status",            "Show server status",    "显示服务端状态"},
+    {"list",              "List hidden/suspended/blocked apps",
+                          "列出隐藏/挂起/阻止卸载的应用"},
+    {"pm",                "Package manager operations (pm-style)",
+                          "包管理操作（pm 风格）"},
+    {"cache",             "Cache operations",      "缓存操作"},
 };
 
 #define HELP_COUNT (sizeof(HELP) / sizeof(HELP[0]))
@@ -73,16 +77,20 @@ void help_print_global(void) {
     }
     printf("\n%s\n", tr("Examples:", "示例:"));
     printf("  dcli ping\n");
-    printf("  dcli lock_now\n");
-    printf("  dcli status hid\n");
-    printf("  dcli status permission android.permission.CAMERA\n");
+    printf("  dcli list hidden\n");
+    printf("  dcli pm list packages -3\n");
+    printf("  dcli pm list permissions android.permission.CAMERA\n");
 }
 
 void help_print_command(const char *cmd) {
+    if (strcmp(cmd, "status") == 0) { help_print_status(); return; }
+    if (strcmp(cmd, "list") == 0)   { help_print_list();   return; }
+    if (strcmp(cmd, "pm") == 0)     { help_print_pm();     return; }
+    if (strcmp(cmd, "cache") == 0)  { help_print_cache();  return; }
+
     for (size_t i = 0; i < HELP_COUNT; i++) {
         if (strcmp(HELP[i].name, cmd) == 0) {
-            printf("%s %s\n", tr("Usage: ", "用法:  "), HELP[i].usage);
-            printf("%s %s\n", tr("Desc:  ", "说明:  "),
+            printf("%s %s\n", tr("Desc:", "说明:"),
                    tr(HELP[i].desc_en, HELP[i].desc_zh));
             return;
         }
@@ -102,56 +110,65 @@ void help_print_version(const char *server_version) {
         printf("dcli %s, Dhizuku Cli %s\n", DCLI_VERSION, server_version);
     }
 
-    printf("%s\n", tr("Copyright (C) 2026 nsyhykui",
-                      "Copyright (C) 2026 nsyhykui"));
-    printf("%s\n", tr(
-            "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.",
-            "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>."));
-    printf("%s\n", tr(
-            "This is free software: you are free to change and redistribute it.",
-            "This is free software: you are free to change and redistribute it."));
-    printf("%s\n", tr(
-            "There is NO WARRANTY, to the extent permitted by law.",
-            "There is NO WARRANTY, to the extent permitted by law."));
+    printf("%s\n", "Copyright (C) 2026 nsyhykui");
+    printf("%s\n", "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.");
+    printf("%s\n", "This is free software: you are free to change and redistribute it.");
+    printf("%s\n", "There is NO WARRANTY, to the extent permitted by law.");
     printf("\n");
-    printf("%s\n", tr("Written by nsyhykui.", "Written by nsyhykui."));
+    printf("%s\n", "Written by nsyhykui.");
 }
 
 void help_print_status(void) {
-    printf("%s\n", tr("Usage: dcli status <subcommand>",
-                      "用法: dcli status <子命令>"));
-    printf("\n%s\n", tr("Subcommands:", "子命令:"));
-    printf("  %-14s %s\n", "hid", tr("List hidden apps",
-                                       "列出被隐藏的应用"));
-    printf("  %-14s %s\n", "suspend", tr("List suspended apps",
-                                           "列出被挂起的应用"));
-    printf("  %-14s %s\n", "block_uninstall", tr("List apps with uninstall blocked",
-                                                    "列出阻止卸载的应用"));
-    printf("  %-14s %s\n", "permission", tr("Query app permissions",
-                                              "查询应用权限"));
-    printf("\n%s\n", tr("Examples:", "示例:"));
-    printf("  dcli status hid\n");
-    printf("  dcli status permission android.permission.CAMERA\n");
-    printf("  dcli status permission --package com.example.app\n");
+    printf("%s\n", tr("Usage: dcli status", "用法: dcli status"));
+    printf("%s\n", tr("Show server running status, IP, port and mode.",
+                      "显示服务端运行状态、IP、端口和模式。"));
 }
 
-void help_print_status_permission(void) {
-    printf("%s\n", tr("Usage: dcli status permission <subcommand>",
-                      "用法: dcli status permission <子命令>"));
+void help_print_list(void) {
+    printf("%s\n", tr("Usage: dcli list <subcommand>",
+                      "用法: dcli list <子命令>"));
     printf("\n%s\n", tr("Subcommands:", "子命令:"));
-    printf("  %-14s %s\n", "update", tr("Rescan all apps and update cache",
-                                          "重新扫描所有应用并更新缓存"));
-    printf("  %-14s %s\n", "<perm>", tr("List apps with this permission",
-                                          "列出拥有该权限的应用"));
-    printf("  %-14s %s\n", "--package <pkg>",
-           tr("List all permissions of this app",
-              "列出该应用的所有权限"));
-    printf("  %-14s %s\n", "<perm> --package <pkg>",
-           tr("Query one app's one permission",
-              "查询某应用某权限的状态"));
+    printf("  %-12s %s\n", "hidden",
+           tr("List hidden apps", "列出被隐藏的应用"));
+    printf("  %-12s %s\n", "suspended",
+           tr("List suspended apps", "列出被挂起的应用"));
+    printf("  %-12s %s\n", "blocked",
+           tr("List apps with uninstall blocked", "列出阻止卸载的应用"));
+}
+
+void help_print_pm(void) {
+    printf("%s\n", tr("Usage: dcli pm <subcommand>",
+                      "用法: dcli pm <子命令>"));
+    printf("\n%s\n", tr("Subcommands:", "子命令:"));
+    printf("  %-12s %s\n", "list packages",
+           tr("List packages (same as pm list packages)",
+              "列出应用（同 pm list packages）"));
+    printf("  %-12s %s\n", "list permissions",
+           tr("Query app permission state",
+              "查询应用权限状态"));
+    printf("  %-12s %s\n", "grant",
+           tr("Grant a runtime permission",
+              "授予运行时权限"));
+    printf("  %-12s %s\n", "revoke",
+           tr("Revoke a runtime permission",
+              "拒绝运行时权限"));
+    printf("  %-12s %s\n", "reset",
+           tr("Reset a permission to default",
+              "恢复权限到默认状态"));
     printf("\n%s\n", tr("Examples:", "示例:"));
-    printf("  dcli status permission update\n");
-    printf("  dcli status permission android.permission.CAMERA\n");
-    printf("  dcli status permission --package com.example.app\n");
-    printf("  dcli status permission android.permission.CAMERA --package com.example.app\n");
+    printf("  dcli pm list packages -3\n");
+    printf("  dcli pm list packages -f wechat\n");
+    printf("  dcli pm list permissions android.permission.CAMERA\n");
+    printf("  dcli pm grant com.example.app android.permission.CAMERA\n");
+    printf("  dcli pm revoke com.example.app android.permission.CAMERA\n");
+    printf("  dcli pm reset com.example.app android.permission.CAMERA\n");
+}
+
+void help_print_cache(void) {
+    printf("%s\n", tr("Usage: dcli cache <subcommand>",
+                      "用法: dcli cache <子命令>"));
+    printf("\n%s\n", tr("Subcommands:", "子命令:"));
+    printf("  %-12s %s\n", "update",
+           tr("Rescan all apps and update cache",
+              "重新扫描所有应用并更新缓存"));
 }

@@ -16,17 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DCLI_HELP_H
-#define DCLI_HELP_H
+#ifndef DCLI_OUTPUT_H
+#define DCLI_OUTPUT_H
 
-int help_is_known_command(const char *cmd);
-void help_print_global(void);
-void help_print_command(const char *cmd);
-void help_print_version(const char *server_version);
+/*
+ * 按行处理服务端响应，分流到 stdout / stderr。
+ * Warning 走 stderr 黄字，错误走 stderr 红字，其他走 stdout。
+ * 返回 1 表示存在错误行（退出码应为 1），否则 0。
+ */
+int output_print(const char *reply);
 
-void help_print_status(void);
-void help_print_list(void);
-void help_print_pm(void);
-void help_print_cache(void);
-
-#endif /* DCLI_HELP_H */
+#endif /* DCLI_OUTPUT_H */
