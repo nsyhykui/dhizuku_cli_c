@@ -61,33 +61,46 @@ In Termux:
 
     dcli ping
     dcli lock_now
-    dcli hide com.example.app
+    dcli list hidden
+    dcli pm list packages -3
 
 ### Commands
 
-| Command | Argument | Description |
-|---------|----------|-------------|
-| ping | — | Test connection |
-| lock_now | — | Lock the screen |
-| hide | package | Hide an app |
-| unhide | package | Unhide an app |
-| suspend | package | Suspend an app |
-| resume | package | Resume an app |
-| block_uninstall | package | Block uninstall |
-| unblock_uninstall | package | Allow uninstall |
-| status | <subcommand> | Query device status |
+Operation commands:
 
-### Status Commands
+| Command | Description |
+|---------|-------------|
+| ping | Test connection |
+| lock_now | Lock the screen |
+| hide / unhide | Hide / unhide an app |
+| suspend / resume | Suspend / resume an app |
+| block_uninstall / unblock_uninstall | Block / allow uninstall |
 
-| Subcommand | Description |
-|------------|-------------|
-| status hid | List hidden apps |
-| status suspend | List suspended apps |
-| status block_uninstall | List apps with uninstall blocked |
-| status permission update | Rescan all apps and update cache |
-| status permission <perm> | List apps with this permission |
-| status permission --package <pkg> | List all permissions of an app |
-| status permission <perm> --package <pkg> | Query one app's permission state |
+Query commands:
+
+| Command | Description |
+|---------|-------------|
+| list hidden | List hidden apps |
+| list suspended | List suspended apps |
+| list blocked | List apps with uninstall blocked |
+| pm list packages [options] | List packages (same as pm list packages) |
+| pm list permissions <perm> | List apps with this permission |
+| pm list permissions --package <pkg> | List all permissions of an app |
+| pm list permissions <perm> --package <pkg> | Query one app's permission state |
+| cache update | Rescan all apps and update cache |
+| status | Show server running status |
+
+Permission management commands:
+
+| Command | Description |
+|---------|-------------|
+| pm grant <pkg> <perm> | Grant a runtime permission |
+| pm revoke <pkg> <perm> | Revoke a runtime permission |
+| pm reset <pkg> <perm> | Reset a permission to default |
+
+pm list packages supports the same options as Android's pm list packages:
+-f -d -e -s -3 -i -u -U --uid, plus a package name filter. The only
+exception is --user, which is not supported.
 
 ### Options
 
@@ -128,13 +141,23 @@ Priority: command-line > env var > current dir file > home dir file > default.
 
 ### Changelog
 
+#### v2.0.0
+
+- Breaking change: command structure and output protocol changed
+- Added pm-style commands (pm list packages / pm list permissions / pm grant / pm revoke / pm reset)
+- Added list hidden / list suspended / list blocked
+- Added cache update
+- Added status (client-side ping)
+- Data commands no longer prefix output with Success
+- Removed: status hid / status suspend / status block_uninstall / status permission xxx
+
 #### v1.1.0
 
-- Added `status` commands
-- Added `--version` / `-V`
-- Added `--help` / `-h` support
+- Added status commands (superseded by v2.0.0)
+- Added --version / -V
+- Added --help / -h support
 - Colored output for errors and warnings
-- Fixed `--package` being treated as unknown option
+- Fixed --package being treated as unknown option
 - Response reading now waits for EOF (supports multi-line output)
 
 #### v1.0.0
@@ -193,33 +216,45 @@ Termux 里：
 
     dcli ping
     dcli lock_now
-    dcli hide com.example.app
+    dcli list hidden
+    dcli pm list packages -3
 
 ### 命令列表
 
-| 命令 | 参数 | 说明 |
-|------|------|------|
-| ping | 无 | 测试连接 |
-| lock_now | 无 | 立即锁屏 |
-| hide | 包名 | 隐藏应用 |
-| unhide | 包名 | 取消隐藏 |
-| suspend | 包名 | 挂起应用 |
-| resume | 包名 | 恢复挂起 |
-| block_uninstall | 包名 | 阻止卸载 |
-| unblock_uninstall | 包名 | 允许卸载 |
-| status | <子命令> | 查询设备状态 |
+操作类命令：
 
-### Status 命令
+| 命令 | 说明 |
+|------|------|
+| ping | 测试连接 |
+| lock_now | 立即锁屏 |
+| hide / unhide | 隐藏 / 取消隐藏应用 |
+| suspend / resume | 挂起 / 恢复应用 |
+| block_uninstall / unblock_uninstall | 阻止 / 允许卸载 |
 
-| 子命令 | 说明 |
-|--------|------|
-| status hid | 列出被隐藏的应用 |
-| status suspend | 列出被挂起的应用 |
-| status block_uninstall | 列出阻止卸载的应用 |
-| status permission update | 重新扫描所有应用并更新缓存 |
-| status permission <权限> | 列出拥有该权限的应用 |
-| status permission --package <包名> | 列出该应用的所有权限 |
-| status permission <权限> --package <包名> | 查询某应用某权限状态 |
+查询类命令：
+
+| 命令 | 说明 |
+|------|------|
+| list hidden | 列出被隐藏的应用 |
+| list suspended | 列出被挂起的应用 |
+| list blocked | 列出阻止卸载的应用 |
+| pm list packages [参数] | 列出应用（同 pm list packages） |
+| pm list permissions <权限> | 列出拥有该权限的应用 |
+| pm list permissions --package <包名> | 列出该应用的所有权限 |
+| pm list permissions <权限> --package <包名> | 查询某应用某权限状态 |
+| cache update | 重新扫描所有应用并更新缓存 |
+| status | 显示服务端运行状态 |
+
+权限管理命令：
+
+| 命令 | 说明 |
+|------|------|
+| pm grant <包名> <权限> | 授予运行时权限 |
+| pm revoke <包名> <权限> | 拒绝运行时权限 |
+| pm reset <包名> <权限> | 恢复权限到默认状态 |
+
+pm list packages 的参数和 Android 自带的 pm list packages 一致：
+-f -d -e -s -3 -i -u -U --uid，另加包名过滤。唯一不支持的是 --user。
 
 ### 选项
 
@@ -260,9 +295,19 @@ Termux 里：
 
 ### 更新日志
 
+#### v2.0.0
+
+- 破坏性更新：命令结构和输出协议都变了
+- 新增 pm 风格命令（pm list packages / pm list permissions / pm grant / pm revoke / pm reset）
+- 新增 list hidden / list suspended / list blocked
+- 新增 cache update
+- 新增 status（客户端本地 ping）
+- 有数据的命令不再带 Success 前缀
+- 删除：status hid / status suspend / status block_uninstall / status permission xxx
+
 #### v1.1.0
 
-- 新增 status 命令
+- 新增 status 命令（v2.0.0 中被替代）
 - 新增 --version / -V
 - 新增 --help / -h 支持
 - 错误与警告输出带颜色
